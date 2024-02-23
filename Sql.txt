@@ -1,0 +1,729 @@
+create database movie_app_db;
+
+use movie_app_db;
+CREATE TABLE movies (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  release_date DATE,
+  description TEXT,
+  Ratings float
+);
+
+INSERT INTO movies (name, release_date, description, Ratings)
+VALUES
+  ('Movie 1', '2023-09-15', 'Description of Movie 1', 4.5);
+
+select * from movies;
+
+ALTER TABLE movies
+ADD COLUMN cinema_id INT,
+ADD CONSTRAINT fk_cinema_id
+  FOREIGN KEY (cinema_id)
+  REFERENCES cinemas(id);
+  
+UPDATE movies
+JOIN cinemas ON movies.name = cinemas.movie
+SET movies.cinema_id = cinemas.id;
+
+SET SQL_SAFE_UPDATES = 0;
+
+
+
+
+CREATE TABLE cinemas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  location VARCHAR(255),
+  movie varchar(100)
+);
+
+
+
+CREATE TABLE actors (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  first_name VARCHAR(255) NOT NULL,
+  last_name VARCHAR(255) NOT NULL,
+  birthdate DATE
+
+);
+
+
+CREATE TABLE movie_cast (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  movie_id INT NOT NULL,
+  actor_id INT NOT NULL,
+  role VARCHAR(255),
+  FOREIGN KEY (movie_id) REFERENCES movies(id),
+  FOREIGN KEY (actor_id) REFERENCES actors(id)
+);
+
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE ratings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  movieName VARCHAR(255) Not null,
+  rating double NOT NULL,
+  userID INT NOT NULL,
+  date DATE NOT NULL
+);
+
+
+USE movie_app_db;
+
+-- Inserting data into the movies table
+INSERT INTO movies (name, release_date, description, Ratings)
+VALUES
+  ('Love', '2023-09-08', 'The romance and disagreements between the pair are central to the storyline of the film titled Love, which also emphasizes the need to gracefully deal with marital problems and other problems relating to relationships.', 4.5),
+  ('Jailer', '2023-09-07', '"Jailer" is a gripping thriller about a determined prison warden who becomes entangled in a complex web of corruption, betrayal, and intrigue as he uncovers terrible truths within the prison walls.', 7.3),
+  ('Dd Returns', '2023-09-01', 'Unknowingly entering the Fernandes\' house is a band of robbers who have just stolen millions of rupees and need a place to hide. The ghosts are ready to start causing chaos.', 6.5),
+  ('Yaadhum Oore Yaavarum Kelir', '2023-08-31', 'It is the intriguing and challenging tale of a refugee who navigates through all the struggles of lives in the attempts of seeking an identity of himself and the answers to his life.', 6.1),
+  ('Baa Baa Black Sheep', '2023-08-29', 'The plot of the wonderful film titled Baa Baa Black Sheep is centered around a school as well as the joys, sorrows, and notoriety of the students that attend it.', 3.7)
+ 
+;
+
+select * from movies;
+
+-- Inserting data into the actors table for the first movie
+
+INSERT INTO actors (first_name, last_name, birthdate)
+VALUES
+  ('Bharath', 'Srinivasan', '1985-07-15'),
+  ('Vani', 'Bhojan', '1990-11-22'),
+  ('Vivek', 'Prasanna', '1980-03-08'),
+  ('Daniel Annie', 'Pope', '1992-04-30');
+  
+  
+  -- Inserting data into the movie_cast table for the first movie
+INSERT INTO movie_cast (movie_id, actor_id, role)
+VALUES
+  (1, 1, 'Lead Actor'),
+  (1, 2, 'Lead Actress'),
+  (1, 3, 'Supporting Actor'),
+  (1, 4, 'Supporting Actor');
+  
+  -- Inserting data into the cinemas table
+INSERT INTO cinemas (name, location)
+VALUES
+  ('Sunset Cinemas', '123 Main Street'),
+  ('Cityplex Theater', '456 Elm Avenue'),
+  ('Starlight Cinemas', '789 Oak Lane'),
+  ('CineMax Theater', '101 Pine Road'),
+  ('MegaPlex Cinemas', '567 Cedar Street');
+  
+  INSERT INTO movie_cast (movie_id, actor_id, role) VALUES
+  (2, 1, 'Lead Actor'),
+  (1, 2, 'Supporting Actor'),
+  (2, 3, 'Lead Actor'),
+  (2, 4, 'Supporting Actor'),
+  (3, 5, 'Lead Actor'),
+  (3, 6, 'Supporting Actor');
+
+
+
+
+update cinemas set movie = "Dd Returns" where  id  like null;
+
+
+use movie_app_db;
+select * from cinemas;
+select * from movies;
+select * from actors;
+select * from movie_cast;
+select * from users;
+select * from ratings;
+
+select movieName, avg(rating) from ratings group by movieName;
+
+delete from actors where id = 5;
+
+ALTER TABLE movie_cast
+DROP FOREIGN KEY movie_cast_ibfk_2;
+
+ALTER TABLE movie_cast
+ADD CONSTRAINT movie_cast_ibfk_2
+FOREIGN KEY (actor_id)
+REFERENCES actors (id)
+ON DELETE CASCADE;
+
+
+
+
+
+____________________________________________________________________________________________________________
+
+-- Create and use the 'Project' database
+CREATE DATABASE Project;
+USE Project;
+
+-- Create the 'Student' table
+CREATE TABLE Student (
+    Student_ID INT NOT NULL PRIMARY KEY,
+    Name VARCHAR(30),
+    Age INT,
+    DateOfBirth DATE,
+    Fees INT,
+    GRADE VARCHAR(1),
+    Gender VARCHAR(2),
+    Standard INT
+);
+
+-- Create the 'Subjects' table
+CREATE TABLE Subjects (
+    SubjectId INT PRIMARY KEY,
+    SubjectName VARCHAR(20)
+);
+
+-- Create the 'Marks' table
+CREATE TABLE Marks (
+    Mark_ID INT PRIMARY KEY, 
+    Student_Id INT,
+    Subject_Id INT,
+    Mark INT,
+    Result ENUM('Pass','Fail'),
+    FOREIGN KEY (Student_Id) REFERENCES Student(Student_ID),
+    FOREIGN KEY (Subject_Id) REFERENCES Subjects(SubjectId)
+);
+
+-- Create the 'Attendance' table
+CREATE TABLE Attendance (
+    Attendance_ID INT PRIMARY KEY,
+    Student_Id INT,
+    Date DATE,
+    Status ENUM('present','absent'),
+    FOREIGN KEY (Student_Id) REFERENCES Student(Student_ID)
+);
+
+-- Create the 'Student360View' view
+CREATE VIEW Student360View AS
+SELECT
+    s.Student_ID,
+    s.Name AS Student_Name,
+    s.Age AS Student_Age,
+    s.DateOfBirth AS Student_DateOfBirth,
+    s.Fees AS Student_Fees,
+    s.GRADE AS Student_Grade,
+    s.Standard AS Student_Standard,
+    
+    sb.SubjectId AS Subject_ID,
+    sb.SubjectName AS Subject_Name,
+    
+    m.Mark_ID AS Mark_ID,
+    m.Mark AS Mark_Value,
+    m.Result AS Mark_Result,
+    
+    a.Attendance_ID AS Attendance_ID,
+    a.Date AS Attendance_Date,
+    a.Status AS Attendance_Status
+FROM Student s
+LEFT JOIN Marks m ON s.Student_ID = m.Student_Id
+LEFT JOIN Subjects sb ON m.Subject_Id = sb.SubjectId
+LEFT JOIN Attendance a ON s.Student_ID = a.Student_Id;
+
+-- Load data from CSV files into tables
+USE Project;
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/student_data.csv'
+INTO TABLE Student
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(Student_ID, Name, Age, DateOfBirth, Fees, GRADE, Standard,Gender);
+
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/subjects_data.csv'
+INTO TABLE Subjects
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(SubjectId, SubjectName);
+
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/attendance_data.csv'
+INTO TABLE Attendance
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(Attendance_ID, Student_Id, Date, Status);
+
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/mark_data.csv'
+INTO TABLE Marks
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES
+(Mark_ID, Student_Id, Subject_Id, Mark, Result);
+
+-- Create trigger to remove related details when a student is deleted
+DELIMITER //
+CREATE TRIGGER remove_details
+AFTER DELETE ON Student
+FOR EACH ROW
+BEGIN
+    DELETE FROM Marks WHERE Student_Id = OLD.Student_ID;
+    DELETE FROM Attendance WHERE Student_Id = OLD.Student_ID;
+END;
+DELIMITER ;
+
+-- Delete a specific student with ID 1001
+DELETE FROM Student WHERE Student_Id = 1002;
+
+-- Alter foreign key constraints with ON DELETE CASCADE
+ALTER TABLE Attendance
+DROP FOREIGN KEY attendance_ibfk_1;
+
+ALTER TABLE Attendance
+ADD CONSTRAINT attendance_ibfk_1
+FOREIGN KEY (Student_Id)
+REFERENCES Student(Student_Id)
+ON DELETE CASCADE;
+
+ALTER TABLE Marks
+DROP FOREIGN KEY marks_ibfk_1;
+
+ALTER TABLE Marks
+ADD CONSTRAINT marks_ibfk_1
+FOREIGN KEY (Student_Id)
+REFERENCES Student(Student_Id)
+ON DELETE CASCADE;
+
+-- Select data from tables and view
+USE Project;
+SELECT * FROM Student;
+SELECT * FROM Marks;
+SELECT * FROM Attendance;
+SELECT * FROM Subjects;
+SELECT * FROM Student360View;
+
+-- Show the 'secure_file_priv' variable value
+SHOW VARIABLES LIKE 'secure_file_priv';
+-----------------------------------------------------------------------------------------------------------
+
+use project;
+select * from student360view;
+
+
+-- Create trigger to remove related details when a student is deleted
+DELIMITER //
+CREATE TRIGGER remove_details
+AFTER DELETE ON Student
+FOR EACH ROW
+BEGIN
+    DELETE FROM Marks WHERE Student_Id = OLD.Student_ID;
+    DELETE FROM Attendance WHERE Student_Id = OLD.Student_ID;
+END;
+DELIMITER ;
+
+-- Delete a specific student with ID 1001
+DELETE FROM Student WHERE Student_Id = 1011;
+
+-----------------------------------------------------------------------------------------------------------------
+
+use project;
+DELIMITER //
+
+CREATE PROCEDURE SearchStudents(
+    IN stud_name VARCHAR(30)
+)
+BEGIN
+    SELECT * FROM Student
+    WHERE Name LIKE CONCAT('%', stud_name, '%');
+END;
+//
+
+
+drop procedure SearchWithAgeAndGender;
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE SearchWithAgeAndGender(
+	IN yrs int,
+    In Sex varchar(2)
+)
+BEGIN
+	     SELECT * FROM Student
+        WHERE Age = yrs AND Gender = Sex;
+END;
+
+//
+DELIMITER ;
+
+call SearchWithAgeAndGender(16,'F');
+call SearchStudents('o');
+
+select * from student;
+
+SET innodb_lock_wait_timeout = 60; -- Set the timeout to 60 seconds
+SET SQL_SAFE_UPDATES = 0;
+
+-------------------------------------------------------------------------------------------------------
+
+
+use project;
+delimiter //
+
+create function Mark_Category(Id int) Returns varchar(55) DETERMINISTIC
+BEGIN
+	declare avrg int;
+    declare result varchar(20);
+    
+    select avg(Mark) 
+    into avrg from marks
+    WHERE Student_Id = Id;
+    
+    if avrg > 80 then
+		set result = 'Distinction';
+	
+    elseif avrg > 70 then
+		set result = 'First Class';
+	
+    elseif avrg > 60 then
+		set result = 'Second Class';
+        
+	elseif avrg > 50 then
+		set result = 'Third Class';
+        
+	else
+		set result = 'Fail';
+        
+	END if;
+	
+    return result;
+END;
+//
+delimiter ;
+
+
+
+select "The Category of the Given Student is ", Mark_Category(1003);
+
+
+
+
+select Subject_Name, count(subject_ID) from student360view group by Subject_Id;
+
+
+select Student_Name, Subject_ID from student360view where Mark_Value = MAX(Mark_Value) group by Subject_Name;
+
+select * from student360view;
+
+
+ select MAX(Mark_Value), Student_Name from student360view group by Subject_Name;
+ 
+ 
+ SELECT 
+    S.Name AS Student_Name,
+    Sub.SubjectName AS Subject, 
+    M.Mark AS Marks
+FROM
+    Student S
+INNER JOIN
+    Marks M ON S.Student_ID = M.Student_Id
+INNER JOIN
+    Subjects Sub ON M.Subject_Id = Sub.SubjectId
+WHERE
+    (M.Subject_Id, M.Mark) IN (
+        SELECT
+            Subject_Id,
+            MAX(Mark) AS Max_Mark
+        FROM
+            Marks
+        GROUP BY
+            Subject_Id
+    );
+
+
+
+-----------------------------------------------------------------------------------------
+
+INSERT INTO Marks (Mark_ID, Student_Id, Subject_Id, Mark, Result)
+VALUES
+    (11, 1016, 1, 95, 'Pass'),
+    (12, 1016, 2, 89, 'Pass'),
+    (13, 1017, 1, 88, 'Pass'),
+    (14, 1017, 2, 70, 'Pass'),
+    (15, 1018, 1, 92, 'Pass'),
+    (16, 1018, 2, 87, 'Pass'),
+    (17, 1019, 1, 78, 'Pass'),
+    (18, 1019, 2, 84, 'Pass'),
+    (19, 1020, 1, 86, 'Pass'),
+    (20, 1020, 2, 79, 'Pass');
+
+
+INSERT INTO Marks (Mark_ID, Student_Id, Subject_Id, Mark, Result)
+VALUES
+    (21, 1011, 1, 85, 'Pass'),
+    (22, 1011, 2, 92, 'Pass'),
+    (23, 1012, 1, 78, 'Pass'),
+    (24, 1012, 2, 88, 'Pass'),
+    (25, 1013, 1, 67, 'Pass'),
+    (26, 1013, 2, 72, 'Pass'),
+    (27, 1014, 1, 90, 'Pass'),
+    (28, 1014, 2, 85, 'Pass'),
+    (29, 1015, 1, 75, 'Pass'),
+    (30, 1015, 2, 68, 'Pass');
+    
+    INSERT INTO Attendance (Attendance_ID, Student_Id, Date, Status)
+VALUES
+ 
+
+ 
+  
+    (33, 1012, '2023-09-10', 'present'),
+  
+    (35, 1013, '2023-09-10', 'present'),
+
+    (37, 1014, '2023-09-10', 'present')
+
+    (39, 1015, '2023-09-10', 'absent'),
+
+    (41, 1016, '2023-09-10', 'present'),
+
+    (43, 1017, '2023-09-10', 'present'),
+
+    (45, 1018, '2023-09-10', 'present'),
+
+    (47, 1019, '2023-09-10', 'present'),
+
+    (49, 1020, '2023-09-10', 'present'),
+
+    (51, 1021, '2023-09-10', 'present'),
+
+    (53, 1022, '2023-09-10', 'present')
+
+    (55, 1023, '2023-09-10', 'present'),
+    (56, 1023, '2023-09-09', 'absent'),
+    (57, 1024, '2023-09-10', 'present'),
+    (58, 1024, '2023-09-09', 'present'),
+    (59, 1025, '2023-09-10', 'absent'),
+    (60, 1025, '2023-09-09', 'absent'),
+    (61, 1026, '2023-09-10', 'present'),
+    (62, 1026, '2023-09-09', 'present'),
+    (63, 1027, '2023-09-10', 'present'),
+    (64, 1027, '2023-09-09', 'absent'),
+    (65, 1028, '2023-09-10', 'present'),
+    (66, 1028, '2023-09-09', 'absent'),
+    (67, 1029, '2023-09-10', 'present'),
+    (68, 1029, '2023-09-09', 'absent'),
+    (69, 1030, '2023-09-10', 'present'),
+    (70, 1030, '2023-09-09', 'present');
+    
+
+    
+    --------------------------------------------------------------------------------------------------
+
+create database product_database;
+use product_database;
+CREATE TABLE customers (
+    customer_id INT  PRIMARY KEY,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    email VARCHAR(255),
+    age INT,
+    address_id INT, -- Foreign key reference to the "addresses" table
+    phone_id INT ,
+
+);
+
+INSERT INTO customers (customer_id,first_name, last_name, email)
+VALUES (34,'John', 'Doe', 'johndoe@example.com');
+
+select * from customers;
+SET SQL_SAFE_UPDATES = 0;
+
+delete from customers;
+
+INSERT INTO customers (customer_id, first_name, last_name, email, age, address_id, phone_id)
+VALUES (2, 'John', 'Doe', 'johndoe@example.com', 30, 123, 456);
+
+
+
+
+
+CREATE TABLE phones (
+    phone_id INT  PRIMARY KEY,
+    customer_id INT, -- Foreign key reference to the "customers" table
+    home_phone VARCHAR(20),
+    fax_phone VARCHAR(20),
+    mobile_phone VARCHAR(20)
+);
+
+
+CREATE TABLE addresses (
+    address_id INT  PRIMARY KEY,
+    street_address VARCHAR(255),
+    city VARCHAR(255),
+    state VARCHAR(255),
+    postal_code VARCHAR(255)
+);
+
+
+SET SQL_SAFE_UPDATES = 0;
+delete from customers;
+delete from addresses;
+delete from phones;
+
+select * from customers;
+select * from addresses;
+select * from phones;
+
+select max(customer_id) as lastValue from customers;
+
+alter table phones drop primary key;
+
+-------------------------------------------------------------------------------------------
+
+CREATE TABLE orders (
+  order_id VARCHAR(10) PRIMARY KEY,
+  order_total DECIMAL(10, 2),
+  customer_email VARCHAR(255),
+  order_date DATETIME
+);
+
+
+CREATE TABLE order_items (
+  item_id INT AUTO_INCREMENT PRIMARY KEY,
+  order_id VARCHAR(10),
+  quantity INT,
+  cost varchar(40)
+);
+
+drop table order_items;
+
+
+use product_database;
+
+delete from orders;
+delete from order_items;
+select * from orders;
+select * from order_items;
+
+SET SQL_SAFE_UPDATES = 0;
+
+drop table order_items;
+
+--------------------------------------------------------------------------------------
+
+create database coupons;
+
+use coupons;
+
+
+CREATE TABLE Coupons (
+    coupon_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT,
+    email VARCHAR(255),
+    campaign VARCHAR(255),
+    coupon_code VARCHAR(36), -- Assuming UUIDs as coupon codes
+    expiry DATE,
+    validity INT, -- Assuming validity is in days
+    status varchar(30), -- Status can be 'active' or 'expired'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Inserting sample data into the Coupons table
+INSERT INTO Coupons (customer_id, email, campaign, coupon_code, expiry, validity, status)
+VALUES
+    (1, 'customer1@example.com', 'birthday_offer', 'b3700aa6-4bd1-11ee-90eb-325096b39f47', '2023-11-05', 60, 'active'),
+    (2, 'customer2@example.com', 'Anniversary', 'c4800bb7-4bd1-11ee-90eb-325096b39f48', '2023-12-20', 45, 'active'),
+    (3, 'customer3@example.com', 'Diwali', 'd5900cc8-4bd1-11ee-90eb-325096b39f49', '2023-10-25', 30, 'expired'),
+    (4, 'customer4@example.com', 'IndependenceDay', 'e6a00dd9-4bd1-11ee-90eb-325096b39f50', '2023-08-15', 15, 'expired'),
+    (5, 'customer5@example.com', 'NewYear', 'f7b00eea-4bd1-11ee-90eb-325096b39f51', '2023-01-01', 7, 'active');
+
+select * from Coupons;
+
+
+
+---------------------------------------------------------------------------------
+
+
+SET SQL_SAFE_UPDATES = 0;
+
+
+CREATE TABLE order_table(
+  order_id VARCHAR(100) PRIMARY KEY,
+  order_total DECIMAL(10, 2),
+  customer_email VARCHAR(255),
+  order_date varchar(70)
+);
+
+drop table orders;
+use nifi;
+select * from order_table;
+select * from order_items;
+delete from order_items;
+
+
+CREATE TABLE customer (
+    customer_id VARCHAR(36) PRIMARY KEY,
+    first_name VARCHAR(255),
+    last_name VARCHAR(255),
+    email VARCHAR(255),
+    age INT
+);
+
+
+
+CREATE TABLE customer_address (
+    customer_id VARCHAR(36)  PRIMARY KEY,
+    streetAddress VARCHAR(255),
+    city VARCHAR(255),
+    state CHAR(2),
+    postalCode VARCHAR(10)
+);
+
+CREATE TABLE phone (
+	customer_id VARCHAR(36) ,
+    phone_id VARCHAR(36) ,
+    type VARCHAR(20),
+    number VARCHAR(20)
+);
+drop table phone;
+
+
+use nifi;
+SET SQL_SAFE_UPDATES = 0;
+delete from customer;
+delete from customer_address;
+delete  from order_table;
+delete from order_items;
+delete from phone;
+
+drop table phone;
+
+
+select * from customer;
+select * from customer_address;
+select * from order_table;
+select * from order_items;
+select * from phone;
+
+
+drop table customer_address;
+
+select * from custome
+
+-------------------------------------------------------------------------
+
+-- Create a new database
+CREATE DATABASE my_contacts_database;
+
+-- Use the newly created database
+USE my_contacts_database;
+
+-- Create the contacts table
+CREATE TABLE contacts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL
+);
+
+select * from contacts;
+
+Select * from contacts where id =1;
+
+
+
+
